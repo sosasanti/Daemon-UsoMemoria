@@ -1,0 +1,112 @@
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 1409
+Nombre: gnome-shell
+Memoria: 345816 KB
+CPU: 6.7
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 2522
+Nombre: code
+Memoria: 295540 KB
+CPU: 6.2
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 1409
+Nombre: gnome-shell
+Memoria: 342448 KB
+CPU: 8.1
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 2522
+Nombre: code
+Memoria: 342592 KB
+CPU: 7.7
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 1409
+Nombre: gnome-shell
+Memoria: 345832 KB
+CPU: 8.1
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 2522
+Nombre: code
+Memoria: 308664 KB
+CPU: 7.8
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 1409
+Nombre: gnome-shell
+Memoria: 339120 KB
+CPU: 9.7
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 2522
+Nombre: code
+Memoria: 350036 KB
+CPU: 9.6
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 1409
+Nombre: gnome-shell
+Memoria: 356536 KB
+CPU: 7
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 2522
+Nombre: code
+Memoria: 351552 KB
+CPU: 7.3
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 1409
+Nombre: gnome-shell
+Memoria: 363184 KB
+CPU: 7.6
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 2522
+Nombre: code
+Memoria: 354292 KB
+CPU: 7.9
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 1409
+Nombre: gnome-shell
+Memoria: 363204 KB
+CPU: 7.7
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 2522
+Nombre: code
+Memoria: 363604 KB
+CPU: 8.1
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 1409
+Nombre: gnome-shell
+Memoria: 375820 KB
+CPU: 8.4
+
+
+Información del procesos LIMITE INTERMEDIO de memoria:
+PID: 2522
+Nombre: code
+Memoria: 363628 KB
+CPU: 8.2
+
+

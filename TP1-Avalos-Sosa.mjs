@@ -2,8 +2,49 @@ import psList from 'ps-list';
 import pidusage from 'pidusage';
 import os from 'os';
 import fs from 'fs';
+import nodemailer from 'nodemailer';
 const configFile = 'config.json';
 const reportFile = 'reporte.txt';
+
+const emailAddress = process.env.EMAIL_ADDRESS;
+const emailPassword = process.env.EMAIL_PASSWORD;
+
+
+
+
+console.log("email ",emailAddress);
+
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    host:"smtp.gmail.com",
+    port:587,
+    secure:false,
+    auth: {
+        user: emailAddress, // Accede al correo electrónico desde la variable de entorno
+        pass: emailPassword // Accede a la contraseña desde la variable de entorno
+    }
+});
+
+let mailOptions = {
+    from: emailAddress,
+    to: 'santiago.sosaa2002@gmail.com',
+    subject: 'Reporte diario de procesos',
+    text: 'Archivo adjunto con los datos diarios',
+    attachments: [
+        {
+            filename: 'reporte.txt',
+            content: 'Contenido del archivo adjunto'
+        }
+    ]
+};
+
+transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+        console.error('Error al enviar el correo electrónico:', error);
+    } else {
+        console.log('Correo electrónico enviado:', info.response);
+    }
+});
 
 // Funcion lectura arch de configuracion
 function readConfigFile() {
