@@ -1,40 +1,9 @@
 import psList from 'ps-list';
-import pidusage from 'pidusage';
-import os from 'os';
 import fs from 'fs';
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
 const configFile = 'config.json';
 const reportFile = 'reporte.txt';
-
-const emailAddress = process.env.EMAIL_ADDRESS;
-const emailPassword = process.env.EMAIL_PASSWORD;
-
-
-let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host:"smtp.gmail.com",
-    port:587,
-    secure:false,
-    auth: {
-        user: emailAddress,
-        pass: emailPassword 
-    }
-});
-
-let mailOptions = {
-    from: emailAddress,
-    to: 'santiago.sosaa2002@gmail.com',
-    subject: 'Reporte diario de procesos',
-    text: 'Archivo adjunto con los datos diarios',
-    attachments: [
-        {
-            filename: 'reporte.txt',
-            path:'reporte.txt'
-        }
-    ]
-};
-
-
 
 
 // Funcion lectura arch de configuracion
@@ -50,122 +19,140 @@ function readConfigFile() {
 }
 
 // Escribe el archivo de reporte
-function writeToReportFile(fs,data) {
-    fs.appendFile(reportFile, data + '\n', (err) => {
-        if (err) {
-            console.error('Error al escribir en el archivo de reporte:', err);
-        }
-    });
-}
-
-//Lectura del archivo de configuracion
-const config = readConfigFile();
-if (config) {
-    console.log('Archivo de configuración cargado exitosamente:');
-    console.log(config);
-} else {
-    console.log('No se pudo cargar el archivo de configuración. Verifica que exista y tenga el formato correcto.');
-}
-
-const tipoMonitoreo = config.tipoMonitoreo;
-const PorcentajeLimiteCPU = config.PorcentajeLimiteCPU;
-const PorcentajeMinimoCPU = config.PorcentajeMinimoCPU;
-const PorcentajeLimiteMemoria= config.PorcentajeLimiteMemoria;
-const PorcentajeMinimoMemoria= config.PorcentajeMinimoMemoria;
-
-// Obtener la memoria total del sistema en KB
-const totalMemoryBytes = os.totalmem();
-const totalMemoryKB = totalMemoryBytes / 1024;
-console.log('Memoria total en KB:', totalMemoryKB, 'KB');
-console.log("memoria total en GB: ", totalMemoryKB/1024/1024, "GB");   
-console.log("cant minima de memoria asignada para que sea reconocido: ", totalMemoryKB * PorcentajeLimiteMemoria/100, "KB"); // 1% de la memoria total del sistema
-
-
-
-// Función para obtener estadísticas de un proceso y mostrarlas
-function getProcessInfo(processes, index,totalMemoryKB) {
-
-    if (index >= processes.length) {
-        return;
+function writeToReportFile(data) {
+    try {
+        fs.appendFileSync(reportFile, data + '\n');
+    } catch (err) {
+        console.error('Error al escribir en el archivo de reporte:', err);
     }
-    const process = processes[index];
+}
 
-    pidusage(process.pid, (err, stats) => {
+function borrarContenidoArchivo(archivo) {
+    fs.writeFile(archivo, '', (err) => {
         if (err) {
-            console.error('Error al obtener información del proceso:', err);
+            console.error('Error al borrar el contenido del archivo:', err);
         } else {
-            switch (tipoMonitoreo){
-                
-                case "Memoria":
-                    const memoryInKB = stats.memory / 1024;
-                    if (memoryInKB > totalMemoryKB * PorcentajeLimiteMemoria/100) { //Envia mail automaticamente
-                            console.log(`Información del proceso con +${PorcentajeLimiteMemoria}% de memoria:`);
-                            console.log(`PID: ${process.pid}`);console.log(`Nombre: ${process.name}`);console.log(`Memoria: ${memoryInKB} KB`);
-                            const logMessage = `Información del proceso con uso de Memoria critica:\n` +
-                            `PID: ${process.pid}\n` +
-                            `Nombre: ${process.name}\n` +
-                            `Memoria: ${memoryInKB} KB\n` +
-                            `CPU: ${processes[index].cpu}\n\n`;
-                            console.log("\n");
-                            writeToReportFile(fs, logMessage);
-                            
-                    }
-                    else if (memoryInKB > totalMemoryKB * PorcentajeMinimoMemoria/100 && memoryInKB < totalMemoryKB * PorcentajeLimiteMemoria/100){
-                        console.log(`Información del procesos LIMITE INTERMEDIO de memoria:`);
-                        console.log(`PID: ${process.pid}`);
-                        console.log(`Nombre: ${process.name}`);
-                        console.log(`Memoria: ${memoryInKB} KB`);
-                        console.log(`CPU: ${processes[index].cpu}`);
-                        console.log("\n");
-                        //Logeo de la info en el archivo
-                        const logMessage = `Información del proceso:\n` +
-                        `PID: ${process.pid}\n` +
-                        `Nombre: ${process.name}\n` +
-                        `Memoria: ${memoryInKB} KB\n` +
-                        `CPU: ${processes[index].cpu}\n\n`;
-                
-                   
-                    }
-                    break;
-                case "CPU":
-                    const usoCPU = processes[index].cpu;
-                    if (usoCPU > PorcentajeLimiteCPU){
-                        const logMessage = `Información del proceso con consumo de CPU critico:\n` +
-                        `PID: ${process.pid}\n` +
-                        `Nombre: ${process.name}\n` +
-                        `Memoria: ${memoryInKB} KB\n` +
-                        `CPU: ${processes[index].cpu}\n\n`;
-                        writeToReportFile(fs, logMessage);
-                    }
-
-                    break;
-                default:
-                    console.log("opcion incorrecta");
-               
-            }
-
-            getProcessInfo(processes, index + 1,totalMemoryKB);   //llamada recursiva para analizar el proximo proceso
+            console.log('Contenido del archivo borrado correctamente.');
         }
     });
 }
 
+//Analiza el consumo de recursos por proceso
+function monitorearRecurso(proceso, config){
+
+    const {tipoMonitoreo, PorcentajeLimiteCPU, PorcentajeMinimoCPU, PorcentajeLimiteMemoria, PorcentajeMinimoMemoria } = config;
+    const esCPU = tipoMonitoreo === "CPU";
+    const esMemoria = tipoMonitoreo === "Memoria";
+
+    if (esCPU && proceso.cpu > PorcentajeLimiteCPU || esMemoria && proceso.memory > PorcentajeLimiteMemoria) {
+        console.log("nombre ",proceso.name," CPU: ",proceso.cpu," Memoria: ",proceso.memory); //sacar dsp
+        const asunto = esCPU ? "Consumo de CPU crítico" : "Consumo de Memoria crítico";
+        const logMessage = `Información del proceso con uso de ${tipoMonitoreo} crítico:\n` +
+            `PID: ${proceso.pid}\n` +
+            `Nombre: ${proceso.name}\n` +
+            `Memoria: ${proceso.memory} \n` +
+            `CPU: ${proceso.cpu} \n\n`;
+        enviarCorreo(asunto, logMessage);
+    } 
+    else if (esCPU && proceso.cpu > PorcentajeMinimoCPU || esMemoria && proceso.memory > PorcentajeMinimoMemoria) {
+        const logMessage = `Información del proceso con uso de ${tipoMonitoreo} crítico:\n` +
+            `PID: ${proceso.pid}\n` +
+            `Nombre: ${proceso.name}\n` +
+            `Memoria: ${proceso.memory} \n` +
+            `CPU: ${proceso.cpu} \n\n`;
+        writeToReportFile(logMessage);
+    }
+}
 
 
-// Obtiene la lista de procesos, luego la info de cada uno
-psList().then(processes => {
+//Recorre lista de procesos
+async function MonitoreoRecursos(config){
+    try{
+        const procesos = await psList();
 
-    getProcessInfo(processes, 0,totalMemoryKB);
+        for (let i = 0; i < procesos.length; i++) {
+            const proceso = procesos[i];
+            try {
+                monitorearRecurso(proceso,config);
+                    
+            } catch (error) {
+                console.error('Error al obtener información del proceso:', error);
+            }
+        }
+    }
+    catch(error){
+        console.error('Error al obtener la lista de procesos:', error);
+    }
+    finally{
+        envioReporteDiario();
+    }
+}
 
-}).catch(error => {
-    console.error('Error al obtener la lista de procesos:', error);
-});
+// Enviar archivo actual de reporte
+function envioReporteDiario() { 
+    enviarCorreo('Reporte diario de procesos con recursos elevados', 'Reporte adjunto','reporte.txt',borrarContenidoArchivo);
+}
 
+function enviarCorreo(asunto, texto,adjuntoPath = null,callback) {
+    let mailOptions = {
+        from: emailAddress,
+        to: 'santiago.sosaa2002@gmail.com',
+        subject: asunto,
+        text: texto
+    };
 
+    if (adjuntoPath) {
+        mailOptions.attachments = [{
+            filename: 'reporte.txt',
+            path: adjuntoPath
+        }];
+    }
 
-transporter.sendMail(mailOptions, function(error, info){
-    if (error) {
-        console.error('Error al enviar el correo electrónico:', error);
-    } else {
-        console.log('Correo electrónico enviado:', info.response);
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.error('Error al enviar el correo electrónico:', error);
+        } else {
+            console.log('Correo electrónico enviado:', info.response);
+            if (callback) {
+                callback(adjuntoPath);
+            }
+        }
+    });
+}
+
+//Variables scope global
+dotenv.config();
+const emailAddress = process.env.EMAIL_ADDRESS;
+const emailPassword = process.env.EMAIL_PASSWORD;
+
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    host:"smtp.gmail.com",
+    port:587,
+    secure:false,
+    auth: {
+        user: emailAddress,
+        pass: emailPassword 
     }
 });
+
+//logica principal 
+function main(){ 
+
+    const config = readConfigFile();
+    if (config === null) {
+        console.log('No se pudo cargar el archivo de configuración');
+    }
+    else{
+        
+        MonitoreoRecursos(config); 
+        setInterval(() => MonitoreoRecursos(config), 60000);
+
+        setInterval(envioReporteDiario, 120000); //cada 2min ahora
+    }
+
+}
+
+main();
+
+
