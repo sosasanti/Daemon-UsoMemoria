@@ -1,0 +1,7 @@
+{
+    "tipoMonitoreo":"Memoria",
+    "PorcentajeLimiteCPU":10,
+    "PorcentajeMinimoCPU":2,
+    "PorcentajeLimiteMemoria":10,
+    "PorcentajeMinimoMemoria":2
+}
