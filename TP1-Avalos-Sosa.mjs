@@ -214,7 +214,7 @@ else if (process.argv[2] !== 'daemon') {  //El padre
         detached: true,
         stdio: 'ignore'
     });
-    console.log(child.pid)
+
     child.unref();
     process.exit();  //El padre se elimina
 } else {
