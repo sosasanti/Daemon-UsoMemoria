@@ -20,7 +20,9 @@ DESTINATION_EMAIL = "Mail que recibira el reporte y las notificaciones de situac
 
 ## **Comandos para la ejecución**
 A) Ejecución
+
 sudo node TP1-Avalos-Sosa.mjs
 
 B) Detención
+
 sudo node TP1-Avalos-Sosa.mjs stop
