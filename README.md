@@ -1,6 +1,6 @@
 # Daemon-UsoMemoria
 
-# **TP1 Software Libre: Daemon**
+# **TP1 Software Libre: Daemon [fork]**
 -Avalos Wenceslao
 
 -Sosa Santiago
