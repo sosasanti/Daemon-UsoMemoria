@@ -21,6 +21,7 @@ const logfullpath = path.join(logdir, logfile);
 dotenv.config();
 let emailAddress = process.env.EMAIL_ADDRESS;
 let emailPassword = process.env.EMAIL_PASSWORD;
+let destinationEmail = process.env.DESTINATION_EMAIL;
 let transporter;
 
 
@@ -168,7 +169,7 @@ function enviarCorreo(asunto, texto, adjuntoPath = null, callback) {
 
     let mailOptions = {
         from: emailAddress,
-        to: 'santiago.sosaa2002@gmail.com',
+        to: destinationEmail,
         subject: asunto,
         text: texto
     };
