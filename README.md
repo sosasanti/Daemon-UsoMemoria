@@ -12,9 +12,12 @@
 1) npm install
    
 2) Crear un archivo .env en el directorio e incluir lo siguiente:
-EMAIL_ADDRESS = "Mail desde el cual se enviaran los correos"
-EMAIL_PASSWORD = "Contraseña de aplicacion de mail a usar"
-DESTINATION_EMAIL = "Mail que recibira el reporte y las notificaciones de situación crítica"
+
+   EMAIL_ADDRESS = "Mail desde el cual se enviaran los correos"
+        
+   EMAIL_PASSWORD = "Contraseña de aplicación de mail a usar"
+        
+   DESTINATION_EMAIL = "Mail que recibira el reporte y las notificaciones de situación crítica"
 
 3) En el archivo .config setear los valores deseados para el monitoreo de la Memoria o Procesador.
 
