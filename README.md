@@ -18,7 +18,7 @@ DESTINATION_EMAIL = "Mail que recibira el reporte y las notificaciones de situac
 
 3) En el archivo .config setear los valores deseados para el monitoreo de la Memoria o Procesador.
 
-## **Comandos para la ejecución*
+## **Comandos para la ejecución**
 A) Ejecución
 sudo node TP1-Avalos-Sosa.mjs
 
